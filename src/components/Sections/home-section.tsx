@@ -14,8 +14,8 @@ const SectionContainer = ({
   return (
     <section
       className={cn(
-        "w-full flex flex-col md:flex-row items-center justify-center gap-6 px-4 md:px-6 py-6 md:py-8",
-        variant ? "bg-white" : "bg-zinc-300",
+        "w-full flex px-4 md:px-6 py-6 md:py-8",
+        variant === "white" ? "bg-white" : "bg-zinc-100",
         className
       )}
       {...props}
@@ -27,17 +27,23 @@ type SectionContent = React.ComponentPropsWithoutRef<"div">;
 
 export const SectionContent = ({ className, ...props }: SectionContent) => {
   return (
-    <div className={cn("w-full max-w-content-section", className)} {...props} />
+    <div
+      className={cn(
+        "w-full max-w-content-section flex flex-col md:flex-row items-center justify-center gap-6",
+        className
+      )}
+      {...props}
+    />
   );
 };
 
-type SectionTitleContainerProps = React.ComponentPropsWithoutRef<"h3">;
+type SectionTitleContainerProps = React.ComponentPropsWithoutRef<"div">;
 
 const SectionTitleContainer = ({
   className,
   ...props
 }: SectionTitleContainerProps) => {
-  return <h3 className={cn("flex flex-col", className)} {...props} />;
+  return <div className={cn("flex flex-col", className)} {...props} />;
 };
 
 type SectionTitleProps = React.ComponentPropsWithoutRef<"h3">;
@@ -54,12 +60,7 @@ const SectionTitle = ({ className, ...props }: SectionTitleProps) => {
 type SectionSubtitleProps = React.ComponentPropsWithoutRef<"h4">;
 
 const SectionSubtitle = ({ className, ...props }: SectionSubtitleProps) => {
-  return (
-    <h4
-      className={cn("text-lg text-zinc-700 font-semibold", className)}
-      {...props}
-    />
-  );
+  return <h4 className={cn("text-md text-zinc-700", className)} {...props} />;
 };
 
 type SectionParagraphProps = React.ComponentPropsWithoutRef<"p">;

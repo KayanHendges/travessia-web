@@ -1,6 +1,5 @@
 "use client";
 import Image from "next/image";
-import LogoPrimary from "@/assets/logo-primary.png";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
@@ -15,6 +14,7 @@ import {
 import { Menu } from "lucide-react";
 import React from "react";
 import { usePathname } from "next/navigation";
+import { PublicImages } from "@/assets/images";
 
 interface NavItem {
   label: string;
@@ -64,7 +64,12 @@ export const Header = () => {
 
   return (
     <header className="flex items-center justify-between gap-6 bg-white shadow-sm px-4 md:px-8 sticky top-0">
-      <Image src={LogoPrimary} height={70} alt="logo" className="py-4" />
+      <Image
+        src={PublicImages.logo.white.src}
+        height={70}
+        alt={PublicImages.logo.white.alt}
+        className="py-4"
+      />
 
       <div className="h-full flex items-center gap-2 md:gap-6">
         <nav className="h-full hidden md:flex items-center">
