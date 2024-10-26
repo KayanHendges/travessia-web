@@ -12,24 +12,42 @@ const sections = {
     <HomeSection.Container>
       <HomeSection.Content>
         <HomeSection.TextContainer>
-          <HomeSection.Title>Sobre o Instituto Travessia</HomeSection.Title>
+          <HomeSection.Title>Quem Somos</HomeSection.Title>
           <HomeSection.Paragraph>
-            O Instituto Travessia é uma associação civil de direito privado, sem
-            fins econômicos, de caráter filantrópico, assistencial, beneficente
-            e educacional. Fundado em 13 de maio de 2023, tem como finalidade a
-            promoção da educação e formação cultural humana, baseando-se em
-            princípios cristãos. Somos leigos católicos, pais de família, das
-            mais variadas profissões e dedicamo-nos a atividades educacionais,
-            culturais e sociais, buscando o desenvolvimento integral das pessoas
-            e da sociedade, sem distribuir lucros ou vantagens a dirigentes,
-            associados ou mantenedores.
+            O <HomeSection.Strong>Instituto Travessia</HomeSection.Strong> é uma
+            instituição de ensino católica, fundada em maio de 2023 com o
+            propósito de promover a educação integral e a formação cultural
+            humana, inspirando-se nos valores e na tradição da Igreja. Como uma
+            associação civil de direito privado e caráter filantrópico, não
+            possui fins lucrativos, dedicando-se inteiramente ao desenvolvimento
+            pessoal e social dos seus alunos e da comunidade.
           </HomeSection.Paragraph>
         </HomeSection.TextContainer>
       </HomeSection.Content>
       <Image src={LogoPrimary} height={400} alt="logo" className="m-6" />
     </HomeSection.Container>
   ),
-  education: <HomeSection.Container></HomeSection.Container>,
+  education: (
+    <HomeSection.Container variant="gray">
+      <HomeSection.Content>
+        <HomeSection.TextContainer>
+          <HomeSection.TitleContainer>
+            <HomeSection.Title>Educação Integral Católica</HomeSection.Title>
+            <HomeSection.Subtitle>
+              Preparando os líderes de amanhã com virtudes e sabedoria.
+            </HomeSection.Subtitle>
+          </HomeSection.TitleContainer>
+          <HomeSection.Paragraph>
+            No Instituto Travessia, acreditamos que a educação vai além do
+            ensino acadêmico: ela é o alicerce para a formação integral do ser
+            humano. Com base na pedagogia católica, nosso objetivo é desenvolver
+            todos os aspectos dos nossos alunos – físico, emocional, intelectual
+            e espiritual – preparando-os para uma vida plena e virtuosa.
+          </HomeSection.Paragraph>
+        </HomeSection.TextContainer>
+      </HomeSection.Content>
+    </HomeSection.Container>
+  ),
   events: <HomeSection.Container></HomeSection.Container>,
   contact: <HomeSection.Container></HomeSection.Container>,
 } as const;

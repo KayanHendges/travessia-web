@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { Drawer as DrawerPrimitive } from "vaul";
 
 import { cn } from "@/lib/utils";
@@ -77,19 +78,30 @@ const DrawerFooter = ({
 );
 DrawerFooter.displayName = "DrawerFooter";
 
+interface DrawerTitleProps
+  extends React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Title> {
+  hidden?: boolean;
+}
+
 const DrawerTitle = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Title>,
-  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Title>
->(({ className, ...props }, ref) => (
-  <DrawerPrimitive.Title
-    ref={ref}
-    className={cn(
-      "text-lg font-semibold leading-none tracking-tight",
-      className
-    )}
-    {...props}
-  />
-));
+  DrawerTitleProps
+>(({ className, hidden, ...props }, ref) => {
+  const Container = hidden ? VisuallyHidden.Root : React.Fragment;
+
+  return (
+    <Container>
+      <DrawerPrimitive.Title
+        ref={ref}
+        className={cn(
+          "text-lg font-semibold leading-none tracking-tight",
+          className
+        )}
+        {...props}
+      />
+    </Container>
+  );
+});
 DrawerTitle.displayName = DrawerPrimitive.Title.displayName;
 
 const DrawerDescription = React.forwardRef<

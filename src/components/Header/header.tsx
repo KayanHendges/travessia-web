@@ -5,7 +5,13 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { HomeSection } from "@/app/page";
-import { Drawer, DrawerContent, DrawerTrigger } from "../ui/drawer";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerTitle,
+  DrawerTrigger,
+} from "../ui/drawer";
+
 import { Menu } from "lucide-react";
 import React from "react";
 import { usePathname } from "next/navigation";
@@ -57,10 +63,10 @@ export const Header = () => {
   }, [pathname]);
 
   return (
-    <header className="flex items-center justify-between bg-white shadow-sm px-8 sticky top-0">
+    <header className="flex items-center justify-between gap-6 bg-white shadow-sm px-4 md:px-8 sticky top-0">
       <Image src={LogoPrimary} height={70} alt="logo" className="py-4" />
 
-      <div className="h-full flex items-center gap-6">
+      <div className="h-full flex items-center gap-2 md:gap-6">
         <nav className="h-full hidden md:flex items-center">
           {navItems.map((item) => (
             <Link
@@ -84,7 +90,8 @@ export const Header = () => {
             <Menu />
           </DrawerTrigger>
           <DrawerContent>
-            <nav className="flex flex-col p-4 gap-1">
+            <DrawerTitle hidden>Menu</DrawerTitle>
+            <nav className="flex flex-col gap-1 p-4">
               {navItems.map((item) => (
                 <Link
                   key={item.label}
@@ -93,7 +100,7 @@ export const Header = () => {
                     setIsDrawerOpen(false);
                   }}
                   className={cn(
-                    "w-full px-3 py-2 text-primary hover:bg-zinc-100 transition-colors rounded-lg"
+                    "w-full px-3 py-2 text-primary-700 hover:text-primary-900 hover:bg-zinc-100 transition-colors rounded-lg"
                   )}
                 >
                   <span className="font-semibold">{item.label}</span>
