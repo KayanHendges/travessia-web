@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 
 export const useHash = () => {
@@ -5,6 +6,7 @@ export const useHash = () => {
 
   React.useEffect(() => {
     const onHashChange = () => {
+      console.log("here");
       setHash(window.location.hash);
     };
 

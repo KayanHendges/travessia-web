@@ -14,15 +14,24 @@ const SectionContainer = ({
   return (
     <section
       className={cn(
-        "flex items-center justify-around gap-4",
-        variant ? "bg-white" : "bg-gray-100"
+        "w-full flex flex-col md:flex-row items-center justify-center gap-6 px-4 md:px-6 py-6 md:py-8",
+        variant ? "bg-white" : "bg-gray-100",
+        className
       )}
       {...props}
     />
   );
 };
 
-interface SectionTitleProps extends React.ComponentPropsWithoutRef<"h3"> {}
+type SectionContent = React.ComponentPropsWithoutRef<"div">;
+
+export const SectionContent = ({ className, ...props }: SectionContent) => {
+  return (
+    <div className={cn("w-full max-w-content-section", className)} {...props} />
+  );
+};
+
+type SectionTitleProps = React.ComponentPropsWithoutRef<"h3">;
 
 const SectionTitle = ({ className, ...props }: SectionTitleProps) => {
   return (
@@ -33,14 +42,13 @@ const SectionTitle = ({ className, ...props }: SectionTitleProps) => {
   );
 };
 
-interface SectionParagraphProps extends React.ComponentPropsWithoutRef<"p"> {}
+type SectionParagraphProps = React.ComponentPropsWithoutRef<"p">;
 
 const SectionParagraph = ({ className, ...props }: SectionParagraphProps) => {
   return <p className={cn("text-lg text-zinc-800", className)} {...props} />;
 };
 
-interface SectionTextContainerProps
-  extends React.ComponentPropsWithoutRef<"div"> {}
+type SectionTextContainerProps = React.ComponentPropsWithoutRef<"div">;
 
 export const SectionTextContainer = ({
   className,
@@ -51,6 +59,7 @@ export const SectionTextContainer = ({
 
 export const HomeSection = {
   Container: SectionContainer,
+  Content: SectionContent,
   Title: SectionTitle,
   Paragraph: SectionParagraph,
   TextContainer: SectionTextContainer,
