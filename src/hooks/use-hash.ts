@@ -2,12 +2,15 @@
 import React from "react";
 
 export const useHash = () => {
-  const [hash, setHash] = React.useState(window.location.hash);
+  const initialHash = typeof window !== "undefined" ? window.location.hash : "";
+  const [hash, setHash] = React.useState(initialHash);
 
   React.useEffect(() => {
+    if (typeof window === "undefined") return;
+
     const onHashChange = () => {
-      console.log("here");
-      setHash(window.location.hash);
+      const newHash = typeof window !== "undefined" ? window.location.hash : "";
+      setHash(newHash);
     };
 
     window.addEventListener("hashchange", onHashChange);

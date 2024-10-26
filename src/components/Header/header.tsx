@@ -80,11 +80,11 @@ export const Header = () => {
         <Button variant="primary">Pré-matricula</Button>
 
         <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-          <DrawerTrigger className="flex md:hidden">
+          <DrawerTrigger className="flex md:hidden text-primary hover:bg-zinc-100 transition-colors rounded-lg p-2">
             <Menu />
           </DrawerTrigger>
           <DrawerContent>
-            <nav className="flex flex-col">
+            <nav className="flex flex-col p-4 gap-1">
               {navItems.map((item) => (
                 <Link
                   key={item.label}
@@ -92,7 +92,9 @@ export const Header = () => {
                   onClick={() => {
                     setIsDrawerOpen(false);
                   }}
-                  className={cn()}
+                  className={cn(
+                    "w-full px-3 py-2 text-primary hover:bg-zinc-100 transition-colors rounded-lg"
+                  )}
                 >
                   <span className="font-semibold">{item.label}</span>
                 </Link>
