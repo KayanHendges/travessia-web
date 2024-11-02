@@ -94,7 +94,14 @@ export const Header = () => {
             ))}
           </nav>
 
-          <Button variant="primary">Pré-matricula</Button>
+          <Button asChild variant="primary">
+            <a
+              target="_blank"
+              href="https://docs.google.com/forms/d/e/1FAIpQLSfYE3BBfYorwJSV_n1yk9YomdaXFNlTam2NSp1EkDWLjIXtpQ/viewform"
+            >
+              Pré-matricula
+            </a>
+          </Button>
 
           <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
             <DrawerTrigger className="flex md:hidden text-primary hover:bg-zinc-100 transition-colors rounded-lg p-2">

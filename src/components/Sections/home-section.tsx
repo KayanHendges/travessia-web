@@ -14,7 +14,7 @@ const SectionContainer = ({
   return (
     <section
       className={cn(
-        "w-full flex flex-col gap-4 justify-center px-4 md:px-6 py-6 md:py-8",
+        "w-full flex flex-col gap-4 justify-center items-center px-4 md:px-6 py-6 md:py-8",
         variant === "white" ? "bg-white" : "bg-zinc-100",
         className
       )}
