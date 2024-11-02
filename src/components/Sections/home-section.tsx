@@ -14,7 +14,7 @@ const SectionContainer = ({
   return (
     <section
       className={cn(
-        "w-full flex px-4 md:px-6 py-6 md:py-8",
+        "w-full flex flex-col gap-4 justify-center px-4 md:px-6 py-6 md:py-8",
         variant === "white" ? "bg-white" : "bg-zinc-100",
         className
       )}
@@ -23,13 +23,21 @@ const SectionContainer = ({
   );
 };
 
-type SectionContent = React.ComponentPropsWithoutRef<"div">;
+interface SectionContent extends React.ComponentPropsWithoutRef<"div"> {
+  mobileContentOrder?: "normal" | "reverse";
+}
 
-export const SectionContent = ({ className, ...props }: SectionContent) => {
+export const SectionContent = ({
+  mobileContentOrder = "normal",
+  className,
+  ...props
+}: SectionContent) => {
   return (
     <div
       className={cn(
-        "w-full max-w-content-section flex flex-col md:flex-row items-center justify-center gap-6",
+        "w-full max-w-content-section flex md:flex-row items-center justify-center gap-6",
+        mobileContentOrder === "normal" && "flex-col",
+        mobileContentOrder === "reverse" && "flex-col-reverse",
         className
       )}
       {...props}

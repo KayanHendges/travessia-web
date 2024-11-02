@@ -35,15 +35,15 @@ const sections = {
   ),
   education: (
     <HomeSection.Container variant="gray">
-      <HomeSection.Content>
+      <HomeSection.Content mobileContentOrder="reverse">
         <div className="flex items-center justify-center bg-primary m-6 overflow-hidden rounded-2xl shadow-md shadow-zinc-400">
           <Image
             src={PublicImages.donBoscoTeaching.src}
             alt={PublicImages.donBoscoTeaching.alt}
-            className="w-full max-w-[300px] md:max-w-[400px] object-contain"
+            className="w-full max-w-[400px] object-contain"
           />
         </div>
-        <HomeSection.TextContainer className="basis-2/3">
+        <HomeSection.TextContainer className="md:basis-2/3">
           <HomeSection.TitleContainer>
             <HomeSection.Title>Educação Integral Católica</HomeSection.Title>
             <HomeSection.Subtitle>
