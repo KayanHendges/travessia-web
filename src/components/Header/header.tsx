@@ -68,7 +68,7 @@ export const Header = () => {
   }, [pathname]);
 
   return (
-    <header className="flex justify-center bg-white shadow-sm px-4 md:px-8 sticky top-0">
+    <header className="flex justify-center bg-white shadow-sm px-4 md:px-8 sticky top-0 z-30">
       <div className="w-full max-w-content-section flex items-center justify-between gap-6">
         <Image
           src={PublicImages.logo.primary.src}

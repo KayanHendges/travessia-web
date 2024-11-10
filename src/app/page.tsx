@@ -6,6 +6,7 @@ import { useHash } from "@/hooks/use-hash";
 import { scrollToSection } from "@/utils/dom";
 import Image from "next/image";
 import { PublicImages } from "@/assets/images";
+import { ValuesCarousel } from "@/components/Carousels/values-carousel";
 
 const sections = {
   "about-us": (
@@ -47,17 +48,24 @@ const sections = {
           <HomeSection.TitleContainer>
             <HomeSection.Title>Educação Integral Católica</HomeSection.Title>
             <HomeSection.Subtitle>
-              Preparando os líderes de amanhã com virtudes e sabedoria.
+              Formando bem a alma, o corpo e o intelecto, buscando juntos o céu.
             </HomeSection.Subtitle>
           </HomeSection.TitleContainer>
           <HomeSection.Paragraph>
-            Acreditamos que a educação vai além do ensino acadêmico: ela é o
-            alicerce para a formação integral do ser humano. Com base na
-            pedagogia católica, nosso objetivo é desenvolver todos os aspectos
-            dos nossos alunos – físico, emocional, intelectual e espiritual –
-            preparando-os para uma vida plena e virtuosa.
+            O objetivo da nossa escola é promover a educação baseada na Tradição
+            da Igreja, no seu Magistério e no ensino dos santos educadores. O
+            olhar da instituição se voltará ao desenvolvimento humano integral
+            dos alunos, o que implica uma compreensão do mundo fiel à doutrina
+            católica.
+            <br />
+            <br />
+            Esta compreensão pode trazer diversas vantagens para a educação das
+            crianças e para a sociedade como um todo.
           </HomeSection.Paragraph>
         </HomeSection.TextContainer>
+      </HomeSection.Content>
+      <HomeSection.Content>
+        <ValuesCarousel />
       </HomeSection.Content>
     </HomeSection.Container>
   ),

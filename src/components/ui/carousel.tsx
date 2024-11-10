@@ -1,262 +1,302 @@
-"use client"
+import { cn } from "@/lib/utils";
+import { ChevronRight } from "lucide-react";
+import React from "react";
 
-import * as React from "react"
-import { ArrowLeftIcon, ArrowRightIcon } from "@radix-ui/react-icons"
-import useEmblaCarousel, {
-  type UseEmblaCarouselType,
-} from "embla-carousel-react"
-
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-
-type CarouselApi = UseEmblaCarouselType[1]
-type UseCarouselParameters = Parameters<typeof useEmblaCarousel>
-type CarouselOptions = UseCarouselParameters[0]
-type CarouselPlugin = UseCarouselParameters[1]
-
-type CarouselProps = {
-  opts?: CarouselOptions
-  plugins?: CarouselPlugin
-  orientation?: "horizontal" | "vertical"
-  setApi?: (api: CarouselApi) => void
+interface Slide {
+  index: number;
+  scrollProgress: number;
 }
 
-type CarouselContextProps = {
-  carouselRef: ReturnType<typeof useEmblaCarousel>[0]
-  api: ReturnType<typeof useEmblaCarousel>[1]
-  scrollPrev: () => void
-  scrollNext: () => void
-  canScrollPrev: boolean
-  canScrollNext: boolean
-} & CarouselProps
-
-const CarouselContext = React.createContext<CarouselContextProps | null>(null)
-
-function useCarousel() {
-  const context = React.useContext(CarouselContext)
-
-  if (!context) {
-    throw new Error("useCarousel must be used within a <Carousel />")
-  }
-
-  return context
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+interface ICarouselContext {
+  itemsCount: number;
+  setItemsCount: React.Dispatch<React.SetStateAction<number>>;
+  currentSlide: Slide;
+  setCurrentSlide: React.Dispatch<React.SetStateAction<Slide>>;
+  isEndScroll: boolean;
+  setIsEndScroll: React.Dispatch<React.SetStateAction<boolean>>;
+  navigateToSlide: (index: number) => void;
 }
 
-const Carousel = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & CarouselProps
->(
-  (
-    {
-      orientation = "horizontal",
-      opts,
-      setApi,
-      plugins,
-      className,
-      children,
-      ...props
-    },
-    ref
-  ) => {
-    const [carouselRef, api] = useEmblaCarousel(
-      {
-        ...opts,
-        axis: orientation === "horizontal" ? "x" : "y",
+const CarouselContext = React.createContext({} as ICarouselContext);
+
+const useCarouselContext = () => React.useContext(CarouselContext);
+
+type CarouselRootProps = React.ComponentPropsWithoutRef<"section">;
+
+const CarouselRoot: React.FC<CarouselRootProps> = ({
+  children,
+  className,
+  ...props
+}) => {
+  const [itemsCount, setItemsCount] = React.useState(0);
+  const [currentSlide, setCurrentSlide] = React.useState<Slide>({
+    index: 0,
+    scrollProgress: 0,
+  });
+
+  const [isEndScroll, setIsEndScroll] = React.useState(true);
+
+  const rootRef = React.useRef<HTMLDivElement>(null);
+
+  const navigateToSlide = (index: number) => {
+    if (!rootRef.current) return;
+
+    const gallery = rootRef.current.querySelector("#carousel_gallery");
+
+    if (!gallery) return;
+
+    const scrollLeft = Array.from({ length: index }).reduce<number>(
+      (acc, _, i) => {
+        const child = gallery.children[i];
+        return acc + child?.clientWidth || 0;
       },
-      plugins
-    )
-    const [canScrollPrev, setCanScrollPrev] = React.useState(false)
-    const [canScrollNext, setCanScrollNext] = React.useState(false)
+      0
+    );
 
-    const onSelect = React.useCallback((api: CarouselApi) => {
-      if (!api) {
-        return
-      }
-
-      setCanScrollPrev(api.canScrollPrev())
-      setCanScrollNext(api.canScrollNext())
-    }, [])
-
-    const scrollPrev = React.useCallback(() => {
-      api?.scrollPrev()
-    }, [api])
-
-    const scrollNext = React.useCallback(() => {
-      api?.scrollNext()
-    }, [api])
-
-    const handleKeyDown = React.useCallback(
-      (event: React.KeyboardEvent<HTMLDivElement>) => {
-        if (event.key === "ArrowLeft") {
-          event.preventDefault()
-          scrollPrev()
-        } else if (event.key === "ArrowRight") {
-          event.preventDefault()
-          scrollNext()
-        }
-      },
-      [scrollPrev, scrollNext]
-    )
-
-    React.useEffect(() => {
-      if (!api || !setApi) {
-        return
-      }
-
-      setApi(api)
-    }, [api, setApi])
-
-    React.useEffect(() => {
-      if (!api) {
-        return
-      }
-
-      onSelect(api)
-      api.on("reInit", onSelect)
-      api.on("select", onSelect)
-
-      return () => {
-        api?.off("select", onSelect)
-      }
-    }, [api, onSelect])
-
-    return (
-      <CarouselContext.Provider
-        value={{
-          carouselRef,
-          api: api,
-          opts,
-          orientation:
-            orientation || (opts?.axis === "y" ? "vertical" : "horizontal"),
-          scrollPrev,
-          scrollNext,
-          canScrollPrev,
-          canScrollNext,
-        }}
-      >
-        <div
-          ref={ref}
-          onKeyDownCapture={handleKeyDown}
-          className={cn("relative", className)}
-          role="region"
-          aria-roledescription="carousel"
-          {...props}
-        >
-          {children}
-        </div>
-      </CarouselContext.Provider>
-    )
-  }
-)
-Carousel.displayName = "Carousel"
-
-const CarouselContent = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => {
-  const { carouselRef, orientation } = useCarousel()
+    gallery.scrollTo({
+      left: scrollLeft,
+      behavior: "smooth",
+    });
+  };
 
   return (
-    <div ref={carouselRef} className="overflow-hidden">
-      <div
-        ref={ref}
-        className={cn(
-          "flex",
-          orientation === "horizontal" ? "-ml-4" : "-mt-4 flex-col",
-          className
-        )}
+    <CarouselContext.Provider
+      value={{
+        itemsCount,
+        setItemsCount,
+        currentSlide,
+        isEndScroll,
+        setIsEndScroll,
+        navigateToSlide,
+        setCurrentSlide,
+      }}
+    >
+      <section
+        ref={rootRef}
+        className={cn("w-full flex flex-col gap-2", className)}
         {...props}
-      />
-    </div>
-  )
-})
-CarouselContent.displayName = "CarouselContent"
+      >
+        {children}
+      </section>
+    </CarouselContext.Provider>
+  );
+};
 
-const CarouselItem = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => {
-  const { orientation } = useCarousel()
+type CarouselGalleryProps = React.ComponentPropsWithoutRef<"div">;
+
+const CarouselGallery: React.FC<CarouselGalleryProps> = ({
+  children,
+  className,
+  ...props
+}) => {
+  const { itemsCount, setItemsCount, setCurrentSlide, setIsEndScroll } =
+    useCarouselContext();
+
+  const childrenCount = React.Children.count(children);
+
+  React.useEffect(() => {
+    setItemsCount(childrenCount);
+  }, [childrenCount, setItemsCount]);
+
+  const onScroll = (event: React.UIEvent<HTMLDivElement, UIEvent>) => {
+    const gallery = event.currentTarget;
+    const childList = Array.from(gallery.children);
+
+    let leftPosition = 0;
+    const firstSlideIndex = childList.findIndex((child) => {
+      leftPosition += child.clientWidth;
+      const isFirst = leftPosition > gallery.scrollLeft;
+      return isFirst;
+    });
+
+    const isEndScroll =
+      Math.ceil(gallery.clientWidth + gallery.scrollLeft) >=
+      gallery.scrollWidth;
+
+    setIsEndScroll(isEndScroll);
+
+    if (isEndScroll) {
+      setCurrentSlide({
+        index: itemsCount - 1,
+        scrollProgress: 1,
+      });
+      return;
+    }
+
+    if (firstSlideIndex < 0) return;
+
+    const scrollProgress =
+      (leftPosition - gallery.scrollLeft) /
+      childList[firstSlideIndex].clientWidth;
+
+    setCurrentSlide({ index: firstSlideIndex, scrollProgress });
+  };
 
   return (
     <div
-      ref={ref}
-      role="group"
-      aria-roledescription="slide"
+      id={"carousel_gallery"}
+      onScroll={onScroll}
       className={cn(
-        "min-w-0 shrink-0 grow-0 basis-full",
-        orientation === "horizontal" ? "pl-4" : "pt-4",
+        "flex gap-4 overflow-x-auto scrollbar-none snap-x snap-mandatory",
         className
       )}
-      {...props}
-    />
-  )
-})
-CarouselItem.displayName = "CarouselItem"
-
-const CarouselPrevious = React.forwardRef<
-  HTMLButtonElement,
-  React.ComponentProps<typeof Button>
->(({ className, variant = "outline", size = "icon", ...props }, ref) => {
-  const { orientation, scrollPrev, canScrollPrev } = useCarousel()
-
-  return (
-    <Button
-      ref={ref}
-      variant={variant}
-      size={size}
-      className={cn(
-        "absolute  h-8 w-8 rounded-full",
-        orientation === "horizontal"
-          ? "-left-12 top-1/2 -translate-y-1/2"
-          : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
-        className
-      )}
-      disabled={!canScrollPrev}
-      onClick={scrollPrev}
       {...props}
     >
-      <ArrowLeftIcon className="h-4 w-4" />
-      <span className="sr-only">Previous slide</span>
-    </Button>
-  )
-})
-CarouselPrevious.displayName = "CarouselPrevious"
+      {children}
+    </div>
+  );
+};
 
-const CarouselNext = React.forwardRef<
-  HTMLButtonElement,
-  React.ComponentProps<typeof Button>
->(({ className, variant = "outline", size = "icon", ...props }, ref) => {
-  const { orientation, scrollNext, canScrollNext } = useCarousel()
+type CarouselSlideProps = React.ComponentPropsWithoutRef<"div">;
 
+const CarouselSlide: React.FC<CarouselSlideProps> = ({
+  children,
+  className,
+  ...props
+}) => {
   return (
-    <Button
-      ref={ref}
-      variant={variant}
-      size={size}
-      className={cn(
-        "absolute h-8 w-8 rounded-full",
-        orientation === "horizontal"
-          ? "-right-12 top-1/2 -translate-y-1/2"
-          : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
-        className
-      )}
-      disabled={!canScrollNext}
-      onClick={scrollNext}
-      {...props}
-    >
-      <ArrowRightIcon className="h-4 w-4" />
-      <span className="sr-only">Next slide</span>
-    </Button>
-  )
-})
-CarouselNext.displayName = "CarouselNext"
+    <div className={cn("snap-start", className)} {...props}>
+      {children}
+    </div>
+  );
+};
 
-export {
-  type CarouselApi,
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselPrevious,
-  CarouselNext,
+type CarouselPaginationBarContainerProps =
+  React.ComponentPropsWithoutRef<"div">;
+
+const CarouselPaginationBarContainer: React.FC<
+  CarouselPaginationBarContainerProps
+> = ({ className, ...props }) => {
+  return (
+    <div className={cn("flex justify-center items-center gap-2")} {...props} />
+  );
+};
+
+interface CarouselPaginationArrowProps
+  extends React.ComponentPropsWithoutRef<"button"> {
+  direction?: "left" | "right";
 }
+
+const CarouselPaginationArrow: React.FC<CarouselPaginationArrowProps> = ({
+  direction = "left",
+  className,
+  ...props
+}) => {
+  const { navigateToSlide, currentSlide, itemsCount, isEndScroll } =
+    useCarouselContext();
+
+  const arrowNavigate = () => {
+    if (direction === "left") {
+      const previousSlideIndex =
+        currentSlide.index <= 0 ? 0 : currentSlide.index - 1;
+
+      navigateToSlide(previousSlideIndex);
+    } else {
+      const nextSlideIndex =
+        currentSlide.index >= itemsCount - 1
+          ? itemsCount - 1
+          : currentSlide.index + 1;
+
+      navigateToSlide(nextSlideIndex);
+    }
+  };
+
+  const isDisabled =
+    direction === "left"
+      ? currentSlide.index <= 0
+      : currentSlide.index >= itemsCount - 1 || isEndScroll;
+
+  return (
+    <button
+      className={cn(
+        "p-1 rounded-full transition-all text-primary-100",
+        direction === "left" && "rotate-180",
+        !isDisabled && "hover:bg-primary-50 hover:text-primary-600",
+        !isDisabled && direction === "left" && "hover:-translate-x-1",
+        !isDisabled && direction === "right" && "hover:translate-x-1",
+        className
+      )}
+      disabled={isDisabled}
+      {...props}
+    >
+      <ChevronRight onClick={arrowNavigate} />
+    </button>
+  );
+};
+
+type CarouselPaginationDotsProps = React.ComponentPropsWithoutRef<"button">;
+
+const CarouselPaginationDots: React.FC<CarouselPaginationDotsProps> = ({}) => {
+  const { itemsCount, currentSlide, navigateToSlide } = useCarouselContext();
+
+  return (
+    <div className="flex items-center gap-2">
+      {Array.from({ length: itemsCount }).map((_, index) => {
+        const isSelected = index === currentSlide.index;
+        const isAfterSelected = index - 1 === currentSlide.index;
+
+        const minWidth = 8;
+        const maxSelectedWidth = 32;
+
+        const percentageWidth = isSelected
+          ? currentSlide.scrollProgress
+          : isAfterSelected
+          ? 1 - currentSlide.scrollProgress
+          : 0;
+        const increasedWidth = percentageWidth * (maxSelectedWidth - minWidth);
+
+        const width = minWidth + increasedWidth;
+
+        return (
+          <button
+            key={index}
+            onClick={() => navigateToSlide(index)}
+            style={{
+              width,
+              minWidth,
+            }}
+            className={cn(
+              "rounded-full h-2 bg-primary-100 transition-colors",
+              isAfterSelected && increasedWidth > 0 && "bg-primary-300",
+              isSelected ? "bg-primary-500" : "hover:bg-primary-200"
+            )}
+          />
+        );
+      })}
+    </div>
+  );
+};
+
+type CarouselPaginationProps = React.ComponentPropsWithoutRef<"div">;
+
+const CarouselPaginationBar: React.FC<CarouselPaginationProps> = ({
+  className,
+  children,
+  ...props
+}) => {
+  if (children)
+    return (
+      <CarouselPaginationBarContainer className={className} {...props}>
+        {children}
+      </CarouselPaginationBarContainer>
+    );
+
+  return (
+    <CarouselPaginationBarContainer {...props}>
+      <CarouselPaginationArrow />
+      <CarouselPaginationDots />
+      <CarouselPaginationArrow direction="right" />
+    </CarouselPaginationBarContainer>
+  );
+};
+
+export const Carousel = {
+  Root: CarouselRoot,
+  Gallery: CarouselGallery,
+  Slide: CarouselSlide,
+  PaginationBar: CarouselPaginationBar,
+  Arrow: CarouselPaginationArrow,
+  useCarouselContext,
+  Dots: CarouselPaginationDots,
+};

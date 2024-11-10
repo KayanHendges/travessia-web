@@ -52,21 +52,21 @@ export const FooterSection = ({ className, ...props }: FooterSectionProps) => {
             </FooterLink>
 
             <span>
-              <strong>telefone: </strong>
+              <strong>Telefone: </strong>
               <FooterLink href="https://wa.me/5547999910956">
                 (47) 99991-0956
               </FooterLink>
             </span>
 
             <span>
-              <strong>email: </strong>
+              <strong>Email: </strong>
               <FooterLink href="mailto:sc.travessia@gmail.com">
                 sc.travessia@gmail.com
               </FooterLink>
             </span>
 
             <p className="text-center">
-              <strong>endereço: </strong>
+              <strong>Endereço: </strong>
               <FooterLink
                 href="https://maps.app.goo.gl/XBK9in2u8gXfStvT8"
                 className="underline"
@@ -87,7 +87,7 @@ export const FooterSection = ({ className, ...props }: FooterSectionProps) => {
             />
             <strong className="text-sm">CNPJ: 52.657.516/0001-07</strong>
             <strong className="text-xs font-light my-auto">
-              Copyright 2023 © Todos os direitos reservados.
+              Copyright 2024 © Todos os direitos reservados.
             </strong>
           </section>
         </div>
