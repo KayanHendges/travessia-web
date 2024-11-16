@@ -1,5 +1,5 @@
 {
-  "name": "my-turborepo",
+  "name": "travessia",
   "private": true,
   "scripts": {
     "build": "turbo build",
