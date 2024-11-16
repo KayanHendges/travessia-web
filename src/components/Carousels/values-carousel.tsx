@@ -88,11 +88,13 @@ export const ValuesCarousel = () => {
       <Carousel.Gallery className="gap-0">
         {values.map(({ title, description }) => {
           return (
-            <Carousel.Slide key={title} className="px-3 py-5">
+            <Carousel.Slide
+              key={title}
+              className="px-3 py-5 min-w-[90%] md:min-w-[350px] max-w-[350px]"
+            >
               <div
                 className={cn(
-                  "min-w-[90%] md:min-w-[350px] max-w-[350px] h-full",
-                  "flex flex-col items-center gap-4",
+                  "h-full flex flex-col items-center gap-4",
                   "bg-white rounded-xl shadow-lg p-6"
                 )}
               >

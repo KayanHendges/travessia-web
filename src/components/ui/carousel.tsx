@@ -2,6 +2,8 @@ import { cn } from "@/lib/utils";
 import { ChevronRight } from "lucide-react";
 import React from "react";
 
+const GALLERY_ID = "#carousel_gallery";
+
 interface Slide {
   index: number;
   scrollProgress: number;
@@ -9,8 +11,7 @@ interface Slide {
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface ICarouselContext {
-  itemsCount: number;
-  setItemsCount: React.Dispatch<React.SetStateAction<number>>;
+  scrollableSlides: number;
   currentSlide: Slide;
   setCurrentSlide: React.Dispatch<React.SetStateAction<Slide>>;
   isEndScroll: boolean;
@@ -29,7 +30,7 @@ const CarouselRoot: React.FC<CarouselRootProps> = ({
   className,
   ...props
 }) => {
-  const [itemsCount, setItemsCount] = React.useState(0);
+  const [scrollableSlides, setScrollableSlides] = React.useState(0);
   const [currentSlide, setCurrentSlide] = React.useState<Slide>({
     index: 0,
     scrollProgress: 0,
@@ -42,7 +43,7 @@ const CarouselRoot: React.FC<CarouselRootProps> = ({
   const navigateToSlide = (index: number) => {
     if (!rootRef.current) return;
 
-    const gallery = rootRef.current.querySelector("#carousel_gallery");
+    const gallery = rootRef.current.querySelector(GALLERY_ID);
 
     if (!gallery) return;
 
@@ -60,15 +61,61 @@ const CarouselRoot: React.FC<CarouselRootProps> = ({
     });
   };
 
+  const calcScrollableSlides = () => {
+    if (!rootRef.current) return 0;
+
+    const gallery = rootRef.current.querySelector(GALLERY_ID);
+
+    if (!gallery) return 0;
+
+    if (gallery.scrollWidth <= gallery.clientWidth) return 0;
+
+    let slideCount = 0;
+    let lastScrollableSlide = false;
+    let leftPosition = 0;
+    const scrollableWidth = gallery.scrollWidth - gallery.clientWidth;
+
+    const childList = Array.from(gallery.children);
+
+    Array.from(childList).forEach((child) => {
+      if (leftPosition <= scrollableWidth) slideCount += 1;
+      else if (!lastScrollableSlide) {
+        lastScrollableSlide = true;
+        slideCount += 1;
+      }
+      leftPosition += child.clientWidth;
+    });
+
+    setScrollableSlides(slideCount);
+  };
+
+  React.useEffect(() => {
+    if (!rootRef.current) return;
+
+    const gallery = rootRef.current.querySelector(GALLERY_ID);
+
+    if (!gallery) return;
+
+    const mutationObserver = new MutationObserver(calcScrollableSlides);
+    const resizeObserver = new ResizeObserver(calcScrollableSlides);
+
+    mutationObserver.observe(gallery, { childList: true });
+    resizeObserver.observe(gallery);
+
+    return () => {
+      mutationObserver.disconnect();
+      resizeObserver.disconnect();
+    };
+  }, []);
+
   return (
     <CarouselContext.Provider
       value={{
-        itemsCount,
-        setItemsCount,
         currentSlide,
         isEndScroll,
         setIsEndScroll,
         navigateToSlide,
+        scrollableSlides,
         setCurrentSlide,
       }}
     >
@@ -90,14 +137,8 @@ const CarouselGallery: React.FC<CarouselGalleryProps> = ({
   className,
   ...props
 }) => {
-  const { itemsCount, setItemsCount, setCurrentSlide, setIsEndScroll } =
+  const { setCurrentSlide, setIsEndScroll, scrollableSlides } =
     useCarouselContext();
-
-  const childrenCount = React.Children.count(children);
-
-  React.useEffect(() => {
-    setItemsCount(childrenCount);
-  }, [childrenCount, setItemsCount]);
 
   const onScroll = (event: React.UIEvent<HTMLDivElement, UIEvent>) => {
     const gallery = event.currentTarget;
@@ -118,7 +159,7 @@ const CarouselGallery: React.FC<CarouselGalleryProps> = ({
 
     if (isEndScroll) {
       setCurrentSlide({
-        index: itemsCount - 1,
+        index: scrollableSlides - 1,
         scrollProgress: 1,
       });
       return;
@@ -183,7 +224,7 @@ const CarouselPaginationArrow: React.FC<CarouselPaginationArrowProps> = ({
   className,
   ...props
 }) => {
-  const { navigateToSlide, currentSlide, itemsCount, isEndScroll } =
+  const { navigateToSlide, currentSlide, scrollableSlides } =
     useCarouselContext();
 
   const arrowNavigate = () => {
@@ -194,8 +235,8 @@ const CarouselPaginationArrow: React.FC<CarouselPaginationArrowProps> = ({
       navigateToSlide(previousSlideIndex);
     } else {
       const nextSlideIndex =
-        currentSlide.index >= itemsCount - 1
-          ? itemsCount - 1
+        currentSlide.index >= scrollableSlides - 1
+          ? scrollableSlides - 1
           : currentSlide.index + 1;
 
       navigateToSlide(nextSlideIndex);
@@ -205,7 +246,7 @@ const CarouselPaginationArrow: React.FC<CarouselPaginationArrowProps> = ({
   const isDisabled =
     direction === "left"
       ? currentSlide.index <= 0
-      : currentSlide.index >= itemsCount - 1 || isEndScroll;
+      : currentSlide.index >= scrollableSlides - 1;
 
   return (
     <button
@@ -228,11 +269,12 @@ const CarouselPaginationArrow: React.FC<CarouselPaginationArrowProps> = ({
 type CarouselPaginationDotsProps = React.ComponentPropsWithoutRef<"button">;
 
 const CarouselPaginationDots: React.FC<CarouselPaginationDotsProps> = ({}) => {
-  const { itemsCount, currentSlide, navigateToSlide } = useCarouselContext();
+  const { scrollableSlides, currentSlide, navigateToSlide } =
+    useCarouselContext();
 
   return (
     <div className="flex items-center gap-2">
-      {Array.from({ length: itemsCount }).map((_, index) => {
+      {Array.from({ length: scrollableSlides }).map((_, index) => {
         const isSelected = index === currentSlide.index;
         const isAfterSelected = index - 1 === currentSlide.index;
 
